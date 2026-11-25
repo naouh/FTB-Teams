@@ -1,0 +1,48 @@
+ext.createModVersion = (Project project) -> {
+    def rootProject = project.rootProject
+    if (!rootProject.hasProperty('mod_version')) {
+        throw new GradleException("Root project must have a 'mod_version' property defined")
+    }
+
+    def modVersion = rootProject.mod_version
+    if (modVersion.contains(".")) {
+        throw new GradleException("mod_version should not contain a dot, as the Minecraft version will be prefixed to it")
+    }
+
+    def mcVersion = normalisedMcVersion(project)
+
+    // kludge: 1.21.1 should be rewritten to 21.1
+    if (mcVersion.startsWith("1.")) {
+        mcVersion = mcVersion.substring(2) // Remove the "1." prefix
+    }
+
+    return mcVersion + "." + modVersion
+}
+
+ext.normalisedMcVersion = (Project project) -> {
+    if (!project.rootProject.hasProperty("minecraft_version")) {
+        throw new GradleException("Root project must have a 'minecraft_version' property defined")
+    }
+
+    String mcVersion = project.rootProject.minecraft_version
+    String[] split = mcVersion.split("\\.")
+    if (split.length < 3) {
+        return mcVersion + ".0"
+    }
+
+    return mcVersion
+}
+
+ext.createReleaseType = (Project project) -> {
+    // Check if the `publishMods` plugin is applied
+    // me.modmuss50.mod-publish-plugin
+    if (!project.rootProject.plugins.hasPlugin("me.modmuss50.mod-publish-plugin")) {
+        throw new GradleException("The 'publishMods' plugin must be applied to use the 'createReleaseType' function")
+    }
+
+    // Import the ReleaseType enum from the plugin: me.modmuss50.mpp.
+    def plugin = project.publishMods
+
+    def tag = providers.environmentVariable("TAG").getOrElse("release")
+    return tag.endsWith("-beta") ? plugin.BETA : (tag.endsWith("-alpha") ? plugin.ALPHA : plugin.STABLE)
+}

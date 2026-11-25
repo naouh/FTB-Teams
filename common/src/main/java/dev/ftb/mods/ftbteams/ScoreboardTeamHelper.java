@@ -7,7 +7,7 @@ import dev.ftb.mods.ftbteams.api.TeamManager;
 import dev.ftb.mods.ftbteams.api.property.TeamProperties;
 import dev.ftb.mods.ftbteams.config.ServerConfig;
 import dev.ftb.mods.ftbteams.data.TeamManagerImpl;
-import net.minecraft.ChatFormatting;
+import net.minecraft.world.scores.TeamColor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ServerScoreboard;
@@ -18,6 +18,7 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /// Methods to facilitate sync'ing FTB party teams up with vanilla scoreboard teams
@@ -186,20 +187,19 @@ public class ScoreboardTeamHelper {
         return TEAM_PREFIX + ftbTeam.getTeamId();
     }
 
-    private static ChatFormatting getBestColor(Color4I target) {
+    // 26.3: scoreboard team colours are now TeamColor (the 16 colour ChatFormattings), set as Optional<TeamColor>
+    private static Optional<TeamColor> getBestColor(Color4I target) {
         double best = Double.MAX_VALUE;
-        ChatFormatting res = ChatFormatting.WHITE;
-        for (var cf : ChatFormatting.values()) {
-            if (cf.getColor() != null) {
-                Color4I col1 = Color4I.rgb(cf.getColor());
-                double dist = yCbCrColorDistance(col1, target);
-                if (dist < best) {
-                    best = dist;
-                    res = cf;
-                }
+        TeamColor res = TeamColor.WHITE;
+        for (var cf : TeamColor.values()) {
+            Color4I col1 = Color4I.rgb(cf.rgb());
+            double dist = yCbCrColorDistance(col1, target);
+            if (dist < best) {
+                best = dist;
+                res = cf;
             }
         }
-        return res;
+        return Optional.of(res);
     }
 
     private static double yCbCrColorDistance(Color4I c1, Color4I c2) {

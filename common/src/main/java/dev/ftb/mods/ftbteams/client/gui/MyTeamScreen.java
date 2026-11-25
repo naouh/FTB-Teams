@@ -33,7 +33,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Util;
-import org.lwjgl.glfw.GLFW;
+import com.mojang.blaze3d.platform.InputConstants;
 
 import java.text.DateFormat;
 import java.util.*;
@@ -194,7 +194,7 @@ public class MyTeamScreen extends BaseScreen implements NordColors {
 
 	@Override
 	public boolean keyPressed(Key key) {
-		if (key.is(GLFW.GLFW_KEY_TAB)) {
+		if (key.is(InputConstants.KEY_TAB)) {
 			chatBox.setFocused(true);
 			return true;
 		}

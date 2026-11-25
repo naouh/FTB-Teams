@@ -1,0 +1,23 @@
+ext.commonMavenRepos = { RepositoryHandler repos ->
+    repos.with {
+        maven {
+            url = "https://maven.ftb.dev/releases"
+            content {
+                includeGroup("dev.ftb.mods")
+                includeGroup("net.rocketplatform.game.client.mod")
+            }
+        }
+        maven {
+            url = "https://maven.ftb.dev/snapshots"
+            content {
+                includeGroup("dev.ftb.mods")
+            }
+        }
+        maven {
+            url "https://cursemaven.com"
+            content {
+                includeGroup "curse.maven"
+            }
+        }
+    }
+}

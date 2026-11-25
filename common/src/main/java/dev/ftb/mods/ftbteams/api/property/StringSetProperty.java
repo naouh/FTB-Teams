@@ -24,7 +24,7 @@ public class StringSetProperty extends TeamProperty<Set<String>> {
     }
 
     static StringSetProperty fromNetwork(Identifier id, FriendlyByteBuf buf) {
-        return new StringSetProperty(id, new HashSet<>(buf.readList(b -> b.readUtf(Short.MAX_VALUE))));
+        return new StringSetProperty(id, PropertyStreamCodecs.STRING_SET.decode(buf));
     }
 
     @Override
@@ -41,7 +41,7 @@ public class StringSetProperty extends TeamProperty<Set<String>> {
 
     @Override
     public void write(RegistryFriendlyByteBuf buf) {
-        buf.writeCollection(getDefaultValue(), FriendlyByteBuf::writeUtf);
+        PropertyStreamCodecs.STRING_SET.encode(buf, getDefaultValue());
     }
 
     @Override
@@ -70,11 +70,11 @@ public class StringSetProperty extends TeamProperty<Set<String>> {
 
     @Override
     public void writeValue(RegistryFriendlyByteBuf buf, Set<String> value) {
-        buf.writeCollection(value, FriendlyByteBuf::writeUtf);
+        PropertyStreamCodecs.STRING_SET.encode(buf, value);
     }
 
     @Override
     public Set<String> readValue(RegistryFriendlyByteBuf buf) {
-        return buf.readCollection(HashSet::new, FriendlyByteBuf::readUtf);
+        return PropertyStreamCodecs.STRING_SET.decode(buf);
     }
 }

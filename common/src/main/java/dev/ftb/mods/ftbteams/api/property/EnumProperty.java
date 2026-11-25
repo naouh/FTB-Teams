@@ -40,7 +40,7 @@ public class EnumProperty extends TeamProperty<String> {
 
 	static EnumProperty fromNetwork(Identifier id, RegistryFriendlyByteBuf buf) {
 		String def = buf.readUtf(Short.MAX_VALUE);
-		List<String> values = buf.readList(b -> b.readUtf(Short.MAX_VALUE));
+		List<String> values = PropertyStreamCodecs.STRING_LIST.decode(buf);
 		int len = buf.readVarInt();
 		Map<String,Component> names = new HashMap<>();
 		for (int i = 0; i < len; i++) {
@@ -62,7 +62,7 @@ public class EnumProperty extends TeamProperty<String> {
 	@Override
 	public void write(RegistryFriendlyByteBuf buf) {
 		buf.writeUtf(getDefaultValue(), Short.MAX_VALUE);
-		buf.writeCollection(values, FriendlyByteBuf::writeUtf);
+		PropertyStreamCodecs.STRING_LIST.encode(buf, values);
 
 		buf.writeVarInt(names.size());
 		names.forEach((k, v) -> {

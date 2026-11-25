@@ -26,7 +26,7 @@ public class StringListProperty extends TeamProperty<List<String>> {
     }
 
     static StringListProperty fromNetwork(Identifier id, FriendlyByteBuf buf) {
-        return new StringListProperty(id, buf.readList(b -> b.readUtf(Short.MAX_VALUE)));
+        return new StringListProperty(id, PropertyStreamCodecs.STRING_LIST.decode(buf));
     }
 
     @Override
@@ -44,7 +44,7 @@ public class StringListProperty extends TeamProperty<List<String>> {
 
     @Override
     public void write(RegistryFriendlyByteBuf buf) {
-        buf.writeCollection(getDefaultValue(), FriendlyByteBuf::writeUtf);
+        PropertyStreamCodecs.STRING_LIST.encode(buf, getDefaultValue());
     }
 
     @Override
@@ -73,11 +73,11 @@ public class StringListProperty extends TeamProperty<List<String>> {
 
     @Override
     public void writeValue(RegistryFriendlyByteBuf buf, List<String> value) {
-        buf.writeCollection(value, FriendlyByteBuf::writeUtf);
+        PropertyStreamCodecs.STRING_LIST.encode(buf, value);
     }
 
     @Override
     public List<String> readValue(RegistryFriendlyByteBuf buf) {
-        return buf.readList(FriendlyByteBuf::readUtf);
+        return PropertyStreamCodecs.STRING_LIST.decode(buf);
     }
 }

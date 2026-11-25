@@ -55,7 +55,7 @@ public class StringMapProperty<T> extends TeamProperty<Map<String,T>> {
 
     @Override
     public void write(RegistryFriendlyByteBuf buf) {
-        buf.writeMap(getDefaultValue(), FriendlyByteBuf::writeUtf, toNet::accept);
+        PropertyStreamCodecs.stringMap(toNet, fromNet).encode(buf, getDefaultValue());
     }
 
     @Override
@@ -78,16 +78,16 @@ public class StringMapProperty<T> extends TeamProperty<Map<String,T>> {
 
     @Override
     public Map<String, T> readValue(RegistryFriendlyByteBuf buf) {
-        return buf.readMap(FriendlyByteBuf::readUtf, fromNet::apply);
+        return PropertyStreamCodecs.stringMap(toNet, fromNet).decode(buf);
     }
 
     @Override
     public void writeValue(RegistryFriendlyByteBuf buf, Map<String, T> value) {
-        buf.writeMap(value, FriendlyByteBuf::writeUtf, toNet::accept);
+        PropertyStreamCodecs.stringMap(toNet, fromNet).encode(buf, value);
     }
 
     protected static <T> Map<String,T> mapFromNetwork(FriendlyByteBuf buf, Function<FriendlyByteBuf,T> fromNet) {
-        return buf.readMap(FriendlyByteBuf::readUtf, fromNet::apply);
+        return PropertyStreamCodecs.stringMap(null, fromNet).decode(buf);
     }
 
     public static class ToInteger extends StringMapProperty<Integer> {

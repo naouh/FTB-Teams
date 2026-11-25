@@ -1,0 +1,23 @@
+// Include (via apply from:) in forge/build.gradle and/or fabric/build.gradle
+// Create a forge/extra-mods-forge or fabric/extra-mods-fabric folder, put mods in there
+// Reload the gradle project and mods will appear as local runtime-only dependencies
+//   and be available in the dev workspace
+// Recommended: add "**/extra-mods-*" to .gitignore
+
+String extraModsDir = "extra-mods-${project.name}"
+repositories {
+	flatDir {
+		name "extra-mods"
+		dir file(extraModsDir)
+	}
+}
+dependencies {
+	for (extraModJar in fileTree(dir: extraModsDir, include: '*.jar')) {
+		def basename = extraModJar.name.substring(0, extraModJar.name.length() - ".jar".length())
+		def versionSep = basename.lastIndexOf('-')
+		assert versionSep != -1
+		def artifactId = basename.substring(0, versionSep)
+		def version = basename.substring(versionSep + 1)
+		localRuntime("extra-mods:$artifactId:$version")
+	}
+}
